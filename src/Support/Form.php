@@ -120,6 +120,11 @@ class Form implements Renderable
     protected $cancelButton;
 
     /**
+     * @var Field\Button
+     */
+    protected $rejectButton;
+
+    /**
      * Form constructor.
      *
      * @param array|string|null $action
@@ -127,14 +132,12 @@ class Form implements Renderable
      */
     public function __construct($action, $method)
     {
-        if ( is_array($action) ) {
+        if (is_array($action)) {
             list($action, $params) = $action;
             $action = $this->presentAction($action, $params);
-        }
-        else if ( ! empty($action) ) {
+        } else if (!empty($action)) {
             $action = $this->presentAction($action);
-        }
-        else {
+        } else {
             $action = URL::current();
         }
 
@@ -145,6 +148,18 @@ class Form implements Renderable
         $this->submitButton->ignoreRender()->color(UIRepository::STYLE_COLOR_DANGER);
         $this->cancelButton = $this->builder->button('cancel', '取 消');
         $this->cancelButton->ignoreRender()->color(UIRepository::STYLE_COLOR_WHITE);
+    }
+
+    public function setRejectButton($column, $label)
+    {
+        $this->rejectButton = $this->builder->button($column, $label);
+        return $this->rejectButton;
+    }
+
+    public function setSubmitButton($column, $label)
+    {
+        $this->submitButton = $this->builder->submit($column, $label);
+        return $this->submitButton;
     }
 
     /**
@@ -188,12 +203,12 @@ class Form implements Renderable
      * @param array $parameters
      * @return string
      */
-    protected function presentAction($action, $parameters = []) {
+    protected function presentAction($action, $parameters = [])
+    {
         // 支持Controller@method and pathinfo
         if (strpos($action, '@') > 0) {
             return action($action, $parameters);
-        }
-        else if (strpos($action, '@') === 0) {
+        } else if (strpos($action, '@') === 0) {
             return route(substr($action, 1), $parameters);
         }
 
@@ -269,10 +284,9 @@ class Form implements Renderable
     public function mapKeyToField($field, $key)
     {
         // 设置field column 与 model field name的映射关系
-        if ( is_array($field) ) {
-            $this->maps = array_merge( $this->maps, array_combine($field, $key) );
-        }
-        else if ( is_string($field) ) {
+        if (is_array($field)) {
+            $this->maps = array_merge($this->maps, array_combine($field, $key));
+        } else if (is_string($field)) {
             $this->maps[$field] = $key;
         }
 
@@ -296,28 +310,25 @@ class Form implements Renderable
             }
 
             $value = null;
-            if ( isset($this->maps[$path.$field->column()]) ) {
-                $data_key = $this->maps[$path.$field->column()];
+            if (isset($this->maps[$path . $field->column()])) {
+                $data_key = $this->maps[$path . $field->column()];
 
                 $value = data_get($this->data, $data_key);
                 if (is_null($value)) {
                     $value = data_get($data, $data_key);
                 }
-            }
-            else if (isset($data)) {
+            } else if (isset($data)) {
                 $value = data_get($data, $field->column());
             }
 
             if ($field instanceof Group) {
-                $this->fillData( $field->fields(), $value, $path.$field->column().'.');
-            }
-            else if ($field instanceof Suite) {
+                $this->fillData($field->fields(), $value, $path . $field->column() . '.');
+            } else if ($field instanceof Suite) {
                 // 设置原始值
                 $field->setOriginal($value);
 
-                $this->fillData( $field->getAccessories(), $value, $path.$field->column().'.');
-            }
-            else {
+                $this->fillData($field->getAccessories(), $value, $path . $field->column() . '.');
+            } else {
                 $field->setOriginal($value);
             }
         });
@@ -332,8 +343,7 @@ class Form implements Renderable
             //TODO relations
             $this->model = $model;
             $this->data = $model;
-        }
-        else {
+        } else {
             $this->data = $model;
         }
 
@@ -371,6 +381,11 @@ class Form implements Renderable
         return $this->submitButton;
     }
 
+    public function rejectButton()
+    {
+        return $this->rejectButton;
+    }
+
     /**
      * @return $this
      */
@@ -405,6 +420,7 @@ class Form implements Renderable
         // 操作按钮
         $this->builder->submitButton = $this->submitButton;
         $this->builder->cancelButton = $this->cancelButton;
+        $this->builder->rejectButton = $this->rejectButton;
 
         // 装载数据
         if (isset($this->data)) {
