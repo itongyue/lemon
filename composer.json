@@ -1,5 +1,5 @@
 {
-    "name": "baisam/lemon",
+    "name": "itongyue/lemon",
     "description": "The web admin library for laravel.",
     "keywords": ["laravel", "layout", "form", "grid", "menu", "permission", "tool"],
     "type": "library",
