@@ -204,8 +204,11 @@ class Grid implements Renderable
     public function setData($model)
     {
         //TODO 这里是否考虑绑定表单数据处理程序
-        if ($model instanceof Eloquent || $model instanceof \Illuminate\Database\Eloquent\Builder) {
+        if ($model instanceof Eloquent || $model instanceof \Illuminate\Database\Eloquent\Builder || $model instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
             //TODO relations
+            if ($model instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
+                $model = $model->getQuery();
+            }
             $this->model = $model;
             $this->data = $model;
         }
