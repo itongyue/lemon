@@ -43,10 +43,10 @@ class LayoutServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        RedirectResponse::macro('success', function ($title, $message) {
+        RedirectResponse::macro('success', function ($title, $message = null) {
             return $this->with('success', new MessageBag(compact('title', 'message')));
         });
-        RedirectResponse::macro('error', function ($title, $message) {
+        RedirectResponse::macro('error', function ($title, $message = null) {
             return $this->with('error', new MessageBag(compact('title', 'message')));
         });
     }
